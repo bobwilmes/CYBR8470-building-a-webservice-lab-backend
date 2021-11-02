@@ -9,18 +9,10 @@ from django.views.decorators.csrf import csrf_exempt
 #REST API routes
 router = routers.DefaultRouter(trailing_slash=False)
 
-#urlpatterns = [
-#  url(r'^session', csrf_exempt(controllers.Session.as_view())),
-#  url(r'^register', csrf_exempt(controllers.Register.as_view())),
-#  url(r'^events', csrf_exempt(controllers.Events.as_view())),
-#  url(r'^activateifttt', csrf_exempt(controllers.ActivateIFTTT.as_view())),
-#  url(r'^', include(router.urls)),
-# ]
-
 urlpatterns = [
-    url(r'^session', csrf_exempt(controllers.Session.as_view())),
-    url(r'^register', csrf_exempt(controllers.Register.as_view())),
-    url(r'^events', csrf_exempt(controllers.Events.as_view())),
-    url(r'^activateifttt', csrf_exempt(controllers.ActivateIFTTT.as_view())),
+    url(r'^api/dogs/$', csrf_exempt(controllers.DogDetail())),
+    url(r'^api/dogs/', csrf_exempt(controllers.DogList())),
+    url(r'^api/breeds/$', csrf_exempt(controllers.BreedDetail())),
+    url(r'^api/breeds/', csrf_exempt(controllers.BreedList())),
     url(r'^', include(router.urls)),
 ]

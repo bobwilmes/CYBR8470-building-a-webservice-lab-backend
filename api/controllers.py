@@ -32,6 +32,12 @@ from rest_framework.permissions import *
 from rest_framework.decorators import *
 from rest_framework.authentication import *
 
+# Add 11-01-201
+
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+
+
 #filters
 #from filters.mixins import *
 
@@ -39,6 +45,13 @@ from api.pagination import *
 import json, datetime, pytz
 from django.core import serializers
 import requests
+
+# Add 11-01-2021 Serializer
+
+# from rest_framework import serializers
+
+# from snippets.models import Snippet
+# from snippets.serializers import SnippetSerializer
 
 
 def home(request):
@@ -54,7 +67,150 @@ def xss_example(request):
   """
   return render_to_response('dumb-test-app/index.html',
               {}, RequestContext(request))
+              
+              
+# Add serializers 11-01-2021
+'''''
+# class DogSerializer(serializers.Serializer):
+    
+   def create(self, validated_data):
+        """
+        Create and return a new `Snippet` instance, given the validated data.
+        """
+        return Dog.objects.create(**validated_data)
 
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Snippet` instance, given the validated data.
+        """
+        instance.name = validated_data.get('name', instance.name)
+        instance.age = validated_data.get('age', instance.age)
+        instance.breed = validated_data.get('breed', instance.breed)
+        instance.gender = validated_data.get('gender', instance.gender)
+        instance.color = validated_data.get('color', instance.style)
+        instance.favoritefood = validated_data.get('favoritefood', instance.gender)
+        instance.favoritetoy = validated_data.get('favoritetoy', instance.style)
+        instance.save()
+        return instance
+
+
+class BreedSerializer(serializers.Serializer):
+    
+    def create(self, validated_data):
+        """
+        Create and return a new `Snippet` instance, given the validated data.
+        """
+        return Breed.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Snippet` instance, given the validated data.
+        """
+        instance.name = validated_data.get('name', instance.name)
+        instance.size = validated_data.get('size', instance.age)
+        instance.friendliness = validated_data.get('friendliness', instance.breed)
+        instance.trainability = validated_data.get('trainability', instance.gender)
+        instance.sheddingamount = validated_data.get('sheddingamount', instance.style)
+        instance.exercizeneeds = validated_data.get('exercizeneeds', instance.gender)
+        instance.save()
+        return instance
+'''
+#
+        
+# Add class-based API view controller for Dog and Breed 11-01-2021
+
+     
+# @csrf_exempt
+def snippet_detail(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        snippet = Snippet.objects.get(pk=pk)
+    except Snippet.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = SnippetSerializer(snippet)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = SnippetSerializer(snippet, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        snippet.delete()
+        return HttpResponse(status=204)
+      
+class DogDetail(APIView):
+  permission_classes = (AllowAny,)
+
+  queryset = Dog.objects.all()
+ 
+  def get(self, request, *args, **kwargs):
+        print "DogDetail get"
+        return self.retrieve(request, *args, **kwargs)
+
+  def put(self, request, *args, **kwargs):
+        print "DogDetail put"
+        return self.update(request, *args, **kwargs)
+        
+  def delete(self, request, *args, **kwargs):
+          print "DogDetail delete"
+          return self.destroy(request, *args, **kwargs)
+       
+
+class DogList(APIView):
+    permission_classes = (AllowAny,)
+
+    queryset = Dog.objects.all()    
+    
+    def get(self, request, *args, **kwargs):
+        print "DogList get"
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+           print "DogList post"
+           return self.create(request, *args, **kwargs)
+
+
+class BreedDetail(APIView):
+    permission_classes = (AllowAny,)
+
+    queryset = Breed.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        print "BreedDetail get"
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        print "BreedDetail put"
+        return self.update(request, *args, **kwargs)
+        
+    def delete(self, request, *args, **kwargs):
+         print "BreedDetail delete"
+         return self.destroy(request, *args, **kwargs)
+       
+
+class BreedList(APIView):
+    permission_classes = (AllowAny,)
+ 
+    queryset = Breed.objects.all()
+  
+    def get(self, request, *args, **kwargs):
+        print "BreedList get"
+        return self.list(request, *args, **kwargs)
+        
+    def post(self, request, *args, **kwargs):
+         print "BreedList post"
+         return self.create(request, *args, **kwargs)
+             
+# end of 11-01-2021 changes 
+        
 class Register(APIView):
     permission_classes = (AllowAny,)
 
